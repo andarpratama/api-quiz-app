@@ -4,7 +4,7 @@ import roleAccess from "./roleAccess.js";
 const authJWT = (req, res, next) => {
     const token = req.headers["authorization"];
     if (!token) {
-        return res.status(401).json({ message: "Missing Access Token" });
+        throw new Error('Missing_Token');
     }
 
     jwt.verify(
@@ -16,7 +16,7 @@ const authJWT = (req, res, next) => {
             }
             req.userId = decoded.userId;
             req.userRole = decoded.role;
-            
+
             if (!roleAccess(req.userRole, req.baseUrl)) {
                 return res.status(403).json({ message: 'Unauthorized Access' });
             }

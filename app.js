@@ -5,6 +5,7 @@ import authRoute from './routes/auth.route.js'
 import connection from './models/connection.js'
 import logger from './middlewares/logger.js'
 import userRoute from './routes/user.route.js'
+import errorHandler from './middlewares/errorHandler.js'
 const app = express()
 dotenv.config()
 
@@ -16,6 +17,7 @@ app.get('/', (req, res) => res.json({msg: "Hello Sanber"}))
 app.use('/auth', authRoute)
 app.use('/student', studentRoute)
 app.use('/user', userRoute)
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3000
 app.listen(PORT, ()=> {
