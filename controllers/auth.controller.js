@@ -10,7 +10,7 @@ export const login = async (req, res) => {
         User.findByUsername(username, async (err, user) => {
             if (err) {
                 if (err.type === 'not_found') {
-                    throw new Error('Data_Not_Found')
+                    return res.status(404).json({ message: 'Data Not Found' });
                 } else {
                     throw new Error('Internal_Server_Error')
                 }

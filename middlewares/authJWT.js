@@ -12,7 +12,7 @@ const authJWT = (req, res, next) => {
         process.env.JWT_SECRET,
         (err, decoded) => {
             if (err) {
-                return res.status(403).json({ message: "Invalid Token" });
+                return res.status(403).json({ success: false, message: "Invalid Token" });
             }
             req.userId = decoded.userId;
             req.userRole = decoded.role;

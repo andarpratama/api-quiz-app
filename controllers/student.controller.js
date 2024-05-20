@@ -14,13 +14,12 @@ export const create = (req, res) => {
 }
 
 export const findAll = (req, res) => {
-    console.log(req.userId)
     Student.getAll((err, data) => {
         if(err) {
             console.log(err)
-            return res.status(500).send({msg: "Exist some error"})
+            return res.status(500).send({success: false, msg: "Exist some error"})
         }
-        res.send(data)
+        res.json({success: true, data: data})
     })
 }
 

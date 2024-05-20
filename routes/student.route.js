@@ -3,7 +3,7 @@ import { create, destroy, findAll, findOne, update } from "../controllers/studen
 import authJWT from "../middlewares/authJWT.js";
 const studentRoute = Router()
 
-// studentRoute.use(authJWT)
+studentRoute.use(authJWT)
 studentRoute.get('/', findAll)
 studentRoute.get('/:id', findOne)
 studentRoute.post('/', create)

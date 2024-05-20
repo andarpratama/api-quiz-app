@@ -1,91 +1,83 @@
-import sql from "./connection.js";
+import pool from "./connection.js";
 
-const User = function(user){
-    this.name = user.name
-    this.username = user.username
-    this.password = user.password
-}
+const User = function(user) {
+    this.name = user.name;
+    this.username = user.username;
+    this.password = user.password;
+};
 
-const tableName = 'users'
+const tableName = 'users';
 
-User.create = (newUser, result) => {
-    sql.query(`INSERT INTO ${tableName} SET ?`, newUser, (err, res) => {
-        if(err) result(err, null)
-        result(null, {id: res.insertId, newUser})
-    })
-}
+User.create = async (newUser, result) => {
+    try {
+        const [res] = await pool.query(`INSERT INTO ${tableName} SET ?`, newUser);
+        result(null, { id: res.insertId, ...newUser });
+    } catch (err) {
+        result(err, null);
+    }
+};
 
-User.getAll = (result) => {
-    sql.query(`SELECT * FROM ${tableName}`, (err, res) => {
-        if(err) result(err, null)
-        result(null, res)
-    })
-}
+User.getAll = async (result) => {
+    try {
+        const [res] = await pool.query(`SELECT * FROM ${tableName}`);
+        result(null, res);
+    } catch (err) {
+        result(err, null);
+    }
+};
 
-User.findById = (id, result) => {
-    sql.query(`SELECT * FROM ${tableName} WHERE id = ${id}`, (err, res) => {
-        if(err) {
-            result(err, null)
-            return
-        }
-        // jika data ditemukan
-        if(res.length) {
-            result(null, res[0])
-            return
-        }
-        // jika kosong
-        result({type: 'not_found'}, null)
-    } )
-}
-
-User.findByUsername = (username, result) => {
-    sql.query(`SELECT * FROM ${tableName} WHERE username = ?`, [username], (err, res) => {
-        if(err) {
-            result(err, null);
-            return;
-        }
-        // jika data ditemukan
-        if(res.length) {
+User.findById = async (id, result) => {
+    try {
+        const [res] = await pool.query(`SELECT * FROM ${tableName} WHERE id = ?`, [id]);
+        if (res.length) {
             result(null, res[0]);
-            return;
+        } else {
+            result({ type: 'not_found' }, null);
         }
-        // jika kosong
-        result({ type: 'not_found' }, null);
-    });
-}
+    } catch (err) {
+        result(err, null);
+    }
+};
 
-User.update = (id, data, result) => {
-    sql.query(`UPDATE ${tableName} SET nama = ?, jurusan = ?, umur = ? WHERE id = ?`, 
-        [data.nama, data.jurusan, data.umur, id], (err, res) => {
-            if(err) {
-                result(err, null)
-                return
-            }
-
-            if(res.affectedRows == 0){
-                result({type: 'not_found'}, null)
-                return
-            }
-
-            result(null, {id: id, data})
-
-        })
-}
-
-User.delete = (id, result) => {
-    sql.query(`DELETE FROM ${tableName} WHERE id = ?`, id, (err, res) => {
-        if(err) {
-            result(err, null)
-            return
+User.findByUsername = async (username, result) => {
+    try {
+        console.log('finddd...' + username)
+        const [res] = await pool.query(`SELECT * FROM ${tableName} WHERE username = ?`, [username]);
+        if (res.length) {
+            result(null, res[0]);
+        } else {
+            result({ type: 'not_found' }, null);
         }
+    } catch (err) {
+        result(err, null);
+    }
+};
 
-        if(res.affectedRows == 0){
-            result({type: 'not_found'}, null)
-            return
+User.update = async (id, data, result) => {
+    try {
+        const [res] = await pool.query(`UPDATE ${tableName} SET name = ?, username = ?, password = ? WHERE id = ?`,
+            [data.name, data.username, data.password, id]);
+        if (res.affectedRows === 0) {
+            result({ type: 'not_found' }, null);
+        } else {
+            result(null, { id: id, ...data });
         }
+    } catch (err) {
+        result(err, null);
+    }
+};
 
-        result(null, res)
-    })
-}
+User.delete = async (id, result) => {
+    try {
+        const [res] = await pool.query(`DELETE FROM ${tableName} WHERE id = ?`, [id]);
+        if (res.affectedRows === 0) {
+            result({ type: 'not_found' }, null);
+        } else {
+            result(null, res);
+        }
+    } catch (err) {
+        result(err, null);
+    }
+};
 
-export default User
+export default User;
