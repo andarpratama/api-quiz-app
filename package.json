@@ -1,4 +1,5 @@
 {
+  "engines": {"node": "20.x"},
   "name": "pertemuan-14",
   "version": "1.0.0",
   "description": "",
